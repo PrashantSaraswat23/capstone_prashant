@@ -1,0 +1,620 @@
+
+{% extends "base.html" %}
+
+{% block title %}Crime Analysis Dashboard{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    <h1 class="page-title">Chicago Crime Analysis Dashboard</h1>
+    <p class="page-description">
+        Statistical analysis and visualization of Chicago crime records.
+    </p>
+
+    <!-- SUMMARY CARDS -->
+    <div class="cards">
+
+        <div class="card">
+            <h3>Total Crimes</h3>
+            <div class="value">{{ summary.total_crimes }}</div>
+        </div>
+
+        <div class="card">
+            <h3>Total Arrests</h3>
+            <div class="value">{{ summary.total_arrests }}</div>
+        </div>
+
+        <div class="card">
+            <h3>Arrest Rate</h3>
+            <div class="value">{{ summary.arrest_rate }}%</div>
+        </div>
+
+        <div class="card">
+            <h3>Crime Categories</h3>
+            <div class="value">{{ summary.crime_categories }}</div>
+        </div>
+
+    </div>
+
+
+    <!-- YEARLY CRIME ANALYSIS -->
+    <section class="section">
+
+        <h2>Yearly Crime Distribution</h2>
+
+        <p class="section-description">
+            Distribution of recorded crimes across different years.
+        </p>
+
+        <div class="chart-container">
+            <canvas id="yearlyCrimeChart"></canvas>
+        </div>
+
+    </section>
+
+
+    <!-- TOP CRIME CATEGORIES -->
+    <section class="section">
+
+        <h2>Top Crime Categories</h2>
+
+        <p class="section-description">
+            Most frequently reported crime categories.
+        </p>
+
+        <div class="chart-container">
+            <canvas id="crimeCategoryChart"></canvas>
+        </div>
+
+    </section>
+
+
+    <!-- MONTHLY CRIME ANALYSIS -->
+    <section class="section">
+
+        <h2>Monthly Crime Distribution</h2>
+
+        <p class="section-description">
+            Number of reported crimes across different months.
+        </p>
+
+        <div class="chart-container">
+            <canvas id="monthlyCrimeChart"></canvas>
+        </div>
+
+    </section>
+
+
+    <!-- COMMUNITY AREA ANALYSIS -->
+    <section class="section">
+
+        <h2>Top Community Areas</h2>
+
+        <p class="section-description">
+            Community areas with the highest recorded crime counts.
+        </p>
+
+        <div class="chart-container">
+            <canvas id="communityCrimeChart"></canvas>
+        </div>
+
+    </section>
+
+
+    <!-- WEEKDAY MONTH HEATMAP -->
+    <section class="section">
+
+        <h2>Crime Distribution by Weekday and Month</h2>
+
+        <p class="section-description">
+            Crime distribution across different weekdays and months.
+        </p>
+
+        <div class="table-container">
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Month</th>
+
+                        {% for column in heatmap_columns %}
+                        <th>{{ column }}</th>
+                        {% endfor %}
+
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for month, values in heatmap_data.items() %}
+
+                    <tr>
+                        <th>{{ month }}</th>
+
+                        {% for column in heatmap_columns %}
+                        <td>{{ values.get(column, 0) }}</td>
+                        {% endfor %}
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+            </table>
+
+        </div>
+
+    </section>
+
+
+    <!-- USE CASE 3 -->
+    <h1 class="page-title">Use Case 3 – Statistical Insights & Pattern Detection</h1>
+
+    <p class="page-description">
+        Numerical and visual analysis to identify deeper patterns
+        and statistical insights in crime data.
+    </p>
+
+
+    <!-- HOURLY CRIME DISTRIBUTION -->
+    <section class="section">
+
+        <h2>1. Crime Intensity by Time</h2>
+
+        <p class="section-description">
+            Hourly crime distribution calculated using Pandas groupby().
+        </p>
+
+        <div class="chart-container">
+            <canvas id="hourlyCrimeChart"></canvas>
+        </div>
+
+        <h3>Hourly Crime Counts</h3>
+
+        <div class="table-container">
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Hour</th>
+                        <th>Number of Crimes</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for item in hourly_crimes %}
+
+                    <tr>
+                        <td>{{ item.hour }}</td>
+                        <td>{{ item.crime_count }}</td>
+                    </tr>
+
+                    {% else %}
+
+                    <tr>
+                        <td colspan="2">No hourly crime data available.</td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+            </table>
+
+        </div>
+
+    </section>
+
+
+    <!-- COMMUNITY AREA STATISTICAL ANALYSIS -->
+    <section class="section">
+
+        <h2>2. Community Area Statistical Analysis</h2>
+
+        <p class="section-description">
+            NumPy statistical calculations and IQR method used
+            to identify extreme crime-count outliers.
+        </p>
+
+        <div class="stat-grid">
+
+            <div class="stat-card">
+                <h4>Mean Crime Count</h4>
+                <p>{{ "%.2f"|format(community_stats.mean_crimes) }}</p>
+            </div>
+
+            <div class="stat-card">
+                <h4>First Quartile (Q1)</h4>
+                <p>{{ "%.2f"|format(community_stats.q1) }}</p>
+            </div>
+
+            <div class="stat-card">
+                <h4>Third Quartile (Q3)</h4>
+                <p>{{ "%.2f"|format(community_stats.q3) }}</p>
+            </div>
+
+            <div class="stat-card">
+                <h4>Interquartile Range</h4>
+                <p>{{ "%.2f"|format(community_stats.iqr) }}</p>
+            </div>
+
+        </div>
+
+        <h3>Community Area Crime Count Box Plot</h3>
+
+        <div class="chart-container">
+            <canvas id="communityBoxPlot"></canvas>
+        </div>
+
+        <h3>IQR Outlier Detection</h3>
+
+        <p class="section-description">
+            Community areas whose crime counts fall outside
+            the lower and upper IQR boundaries.
+        </p>
+
+        <div class="table-container">
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Community Area</th>
+                        <th>Total Crimes</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for item in community_stats.outliers %}
+
+                    <tr>
+                        <td>{{ item.community_code }}</td>
+                        <td>{{ item.total_crimes }}</td>
+                    </tr>
+
+                    {% else %}
+
+                    <tr>
+                        <td colspan="2">No outliers detected.</td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+            </table>
+
+        </div>
+
+    </section>
+
+
+    <!-- CORRELATION HEATMAP -->
+    <section class="section">
+
+        <h2>3. Crime Cross-Correlation Heatmap</h2>
+
+        <p class="section-description">
+            Correlation matrix generated using Pandas corr()
+            to examine relationships between numerical variables.
+        </p>
+
+        <div class="table-container">
+
+            <table id="correlationHeatmap">
+
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+
+                        {% for column in correlation_data.columns %}
+                        <th>{{ column }}</th>
+                        {% endfor %}
+
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for row in correlation_data.matrix %}
+
+                    <tr>
+
+                        <th>{{ correlation_data.columns[loop.index0] }}</th>
+
+                        {% for value in row %}
+
+                        <td class="correlation-cell"
+                            data-value="{{ value if value == value else 0 }}">
+
+                            {{ "%.2f"|format(value) if value == value else "N/A" }}
+
+                        </td>
+
+                        {% endfor %}
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        <div class="heatmap-legend">
+
+            <span>
+                <span class="legend-color positive"></span>
+                Positive Correlation
+            </span>
+
+            <span>
+                <span class="legend-color negative"></span>
+                Negative Correlation
+            </span>
+
+            <span>
+                <span class="legend-color neutral"></span>
+                Weak or No Correlation
+            </span>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+<!-- CHART.JS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- BOX PLOT PLUGIN -->
+<script src="https://cdn.jsdelivr.net/npm/@sgratzl/chartjs-chart-boxplot@4"></script>
+
+
+<script>
+
+    // Common chart settings
+    Chart.defaults.font.family = "Arial";
+    Chart.defaults.color = "#475569";
+
+
+    // YEARLY CRIME CHART
+    const yearlyData = {{ yearly_crimes | tojson }};
+
+    new Chart(document.getElementById("yearlyCrimeChart"), {
+        type: "bar",
+        data: {
+            labels: yearlyData.map(item => item.year),
+            datasets: [{
+                label: "Total Crimes",
+                data: yearlyData.map(item => item.crime_count),
+                backgroundColor: "#3b82f6"
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+
+
+    // TOP CRIME CATEGORIES CHART
+    const categoryData = {{ top_categories | tojson }};
+
+    new Chart(document.getElementById("crimeCategoryChart"), {
+        type: "bar",
+        data: {
+            labels: categoryData.map(item => item.primary_type),
+            datasets: [{
+                label: "Crime Count",
+                data: categoryData.map(item => item.crime_count),
+                backgroundColor: "#0f766e"
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            indexAxis: "y"
+        }
+    });
+
+
+    // MONTHLY CRIME CHART
+    const monthlyData = {{ monthly_crimes | tojson }};
+
+    new Chart(document.getElementById("monthlyCrimeChart"), {
+        type: "line",
+        data: {
+            labels: monthlyData.map(item => item.Month),
+            datasets: [{
+                label: "Monthly Crimes",
+                data: monthlyData.map(item => item.crime_count),
+                borderColor: "#7c3aed",
+                backgroundColor: "rgba(124, 58, 237, 0.12)",
+                fill: true,
+                tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+
+
+    // COMMUNITY AREA CHART
+    const communityData = {{ community_areas | tojson }};
+
+    new Chart(document.getElementById("communityCrimeChart"), {
+        type: "bar",
+        data: {
+            labels: communityData.map(item => item.community_code),
+            datasets: [{
+                label: "Total Crimes",
+                data: communityData.map(item => item.crime_count),
+                backgroundColor: "#ea580c"
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            indexAxis: "y"
+        }
+    });
+
+
+    // HOURLY CRIME DISTRIBUTION
+    const hourlyData = {{ hourly_crimes | tojson }};
+
+    new Chart(document.getElementById("hourlyCrimeChart"), {
+        type: "line",
+        data: {
+            labels: hourlyData.map(item => item.hour + ":00"),
+            datasets: [{
+                label: "Crimes per Hour",
+                data: hourlyData.map(item => item.crime_count),
+                borderColor: "#2563eb",
+                backgroundColor: "rgba(37, 99, 235, 0.15)",
+                fill: true,
+                tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: "Hour of Day"
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: "Crime Count"
+                    }
+                }
+            }
+        }
+    });
+
+
+    // COMMUNITY AREA BOX PLOT
+    const communityCountValues =
+        {{ community_stats.crime_count_values | tojson }};
+
+    new Chart(document.getElementById("communityBoxPlot"), {
+        type: "boxplot",
+        data: {
+            labels: ["Community Area Crime Counts"],
+            datasets: [{
+                label: "Crime Count Distribution",
+                data: [communityCountValues],
+                backgroundColor: "rgba(59, 130, 246, 0.35)",
+                borderColor: "#2563eb",
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: "Crime Count"
+                    }
+                }
+            }
+        }
+    });
+
+
+    // CORRELATION HEATMAP COLOURING
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const cells = document.querySelectorAll(".correlation-cell");
+
+        cells.forEach(function (cell) {
+
+            const value = parseFloat(cell.dataset.value);
+
+            if (isNaN(value)) {
+                return;
+            }
+
+            const intensity = Math.abs(value);
+            const lightness = 96 - (intensity * 46);
+
+            if (value >= 0) {
+                cell.style.backgroundColor =
+                    `hsl(215, 75%, ${lightness}%)`;
+            } else {
+                cell.style.backgroundColor =
+                    `hsl(0, 75%, ${lightness}%)`;
+            }
+
+            cell.style.color =
+                intensity > 0.55 ? "#ffffff" : "#1f2937";
+
+            cell.style.fontWeight = "600";
+            cell.style.textAlign = "center";
+
+        });
+
+    });
+
+</script>
+
+
+<style>
+
+    .heatmap-legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin-top: 20px;
+        font-size: 13px;
+        color: #475569;
+    }
+
+    .heatmap-legend span {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+    }
+
+    .legend-color {
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        border-radius: 3px;
+    }
+
+    .legend-color.positive {
+        background: #2563eb;
+    }
+
+    .legend-color.negative {
+        background: #dc2626;
+    }
+
+    .legend-color.neutral {
+        background: #e2e8f0;
+    }
+
+    #correlationHeatmap th,
+    #correlationHeatmap td {
+        min-width: 75px;
+        text-align: center;
+    }
+
+</style>
+
+{% endblock %}

@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+notebooks/Chicago Datasets/
+
+# VS Code
+.vscode/
+
+# Environment variables
+.env
+
+# Temporary files
+*.log
+*.tmp
+
+# Duplicate dataset archive
+data/Chicago Datasets.zip

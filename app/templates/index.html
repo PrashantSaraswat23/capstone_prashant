@@ -1,0 +1,47 @@
+
+{% extends "base.html" %}
+
+{% block title %}Home | Chicago Crime Analysis{% endblock %}
+
+{% block content %}
+
+<section class="hero-section text-center">
+    <h1>Chicago Crime Analysis</h1>
+
+    <p class="lead">
+        Explore crime patterns, trends, arrest statistics,
+        and community-level crime distribution in Chicago.
+    </p>
+
+    <a href="{{ url_for('main.dashboard') }}"
+       class="btn btn-primary btn-lg mt-3">
+        Explore Dashboard
+    </a>
+</section>
+
+<section class="row mt-5 text-center">
+
+    <div class="col-md-4 mb-3">
+        <div class="feature-card">
+            <h4>Crime Trends</h4>
+            <p>Understand how crime patterns change over the years.</p>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <div class="feature-card">
+            <h4>Crime Categories</h4>
+            <p>Explore frequently reported crime categories.</p>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <div class="feature-card">
+            <h4>Arrest Analysis</h4>
+            <p>Examine arrests and crime distribution across Chicago.</p>
+        </div>
+    </div>
+
+</section>
+
+{% endblock %}
